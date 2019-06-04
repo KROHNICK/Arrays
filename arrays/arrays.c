@@ -110,14 +110,29 @@ void arr_insert(Array *arr, char *element, int index)
 {
 
   // Throw an error if the index is greater than the current count
+  if (index > arr->count)
+  {
+    fprintf(stderr, "Index greater than count of array (insert)\n");
+    exit(1);
+  }
 
   // Resize the array if the number of elements is over capacity
+  if (arr->capacity < arr->count + 1)
+  {
+    resize_array(arr);
+  }
 
   // Move every element after the insert index to the right one position
+  for (int i = index; i < arr->count; i++)
+  {
+    arr->elements[i + 1] = arr->elements[i]; // --> Free up a space for new insert
+  }
 
-  // Copy the element (hint: use `strdup()`) and add it to the array
+  // Copy the element and add it to the array
+  arr->elements[index] = element;
 
   // Increment count by 1
+  arr->elements[index] = element;
 }
 
 /*****
@@ -128,10 +143,15 @@ void arr_append(Array *arr, char *element)
 
   // Resize the array if the number of elements is over capacity
   // or throw an error if resize isn't implemented yet.
-
+  if (arr->capacity < arr->count + 1)
+  {
+    resize_array(arr);
+  }
   // Copy the element and add it to the end of the array
+  arr->elements[arr->count] = element;
 
   // Increment count by 1
+  arr->count++;
 }
 
 /*****
@@ -145,10 +165,31 @@ void arr_remove(Array *arr, char *element)
 
   // Search for the first occurence of the element and remove it.
   // Don't forget to free its memory!
+  for (int i = 0; i < arr->count; i++)
+  {
 
-  // Shift over every element after the removed element to the left one position
+    if (arr->elements[i] == element)
+    {
+      int index_found = 0;
+      index_found = i;
+      arr->elements[i] = NULL;
+      free(arr->elements[i]);
 
-  // Decrement count by 1
+      // Shift over every element after the removed element to the left one position
+      for (int i = index_found; i < arr->count; i++)
+      {
+        arr->elements[i] = arr->elements[i + 1];
+      }
+
+      // Decrement count by 1
+      arr->count = arr->count - 1;
+    }
+    else if (i == arr->count)
+    {
+      fprintf(stderr, "Could not find element (remove)\n");
+      exit(1);
+    }
+  }
 }
 
 /*****
